@@ -30,13 +30,18 @@ d_raw <- read_csv("covid19.csv",
                                ))
 ```
 
-
-
 ```{r}
 #?
 #d_raw <- d_raw[-2224,]
 ```
 
+
+```{r}
+table(d_raw$death)
+```
+```{r}
+table(d_raw$gender, useNA = "always")
+```
 
 ```{r}
 as_date <- function(x) as.Date(x, format = "%m/%d/%y")
@@ -58,38 +63,136 @@ d <-
 
 ### Frequency tables and independence tests
 ```{r}
-with(d, table(death_status, gender))
-with(d, round(100 * prop.table(table(death_status, gender), 2), 1))
-with(d, chisq.test(table(death_status, gender)))
+with(d, table(death_status, gender)) # absolute frequencies
+with(d, round(100 * prop.table(table(death_status, gender), 2), 1)) # relative frequencies (2-frequencies per column)
+with(d, chisq.test(table(death_status, gender))) # test of independence
 ```
+
+H0 = probabilities equals
+p-value > 0.05 --> cannot reject H0
+there is no significant difference
+
+chisq.test is an asymptotic test (tends to chisq when n -> inf)
+- easy
+- computationaly cheap
+- widely available
+
+- but approximate
+
+can use Fisher exact test (no doable by hand)
+- extact test
+
+- but computationaly demanding
+- memory intensive if sample size is big
 
 ```{r}
 with(d, fisher.test(table(death_status, gender)))
 ```
 
+odds ratio: odds man / odds woman
+
+odds man = 6.6% / 93.4%
+odds woman = 4.1% / 95.9%
+
+what's difference in risk of death by covid19 between man and woman: 
+odds ratio (1.66) with CI of (0.97-2.93)
+p-value = 0.06
+
+
 ### Logistic regression
+
+Yi | Gi ~ Ber(pi) , logit(pi)= B0 + B1*Gi , iid
+Gi : gender of subject (0 female, 1 male)
+
+B in R²
+
+yi , gi observed
+
+--> LIKELIHOOD FUNCTION:
+f(y;g;B) = product[ f(yi;gi;B)  ] -> yi, gi known, we want to estimate B
+           i=1;n          
+
+B0 intercept
+B1 gendermale
+
 ```{r}
 summary(glm(death_status ~ gender, data = d, family = "binomial"))
 ```
+
+logit(prob_of_dying_i) = B0 + B1*Gi
+B0 = -3.1551, stddev = 0.22 
+B1 = 0.5069, stddev = 0.26
+
+Ho: B1 = 0, interpreted as lack of association between gender and outcome
+
+WALD test: Bhat / SEhat ~ N(0,1)
+
 
 ```{r}
 exp(0.5069)
 ```
 
+logistic regression -> exp(B1) : odds ratio
 
 ## Age
 ```{r}
-glm(death_status ~ age, data = d, family = "binomial"))
+summary(glm(death_status ~ age, data = d, family = "binomial"))
 ```
 
+age estimate > 0 --> positive relationship
+p-value << 0 -> strong relationship
+
+
+using age in decade:
 ```{r}
 fit <- glm(death_status ~ I(age/10), data = d, family = "binomial")
 summary(fit)
 ```
 
+
 ```{r}
 exp(coef(fit)[2])
 ```
+
+for a decade increase in age -> the odds ratio is greater than 2
+
+confidence interval
+```{r}
+exp(confint(fit)[2,])
+```
+OR CI between 1.86 and 2.7
+
+RISK OF DEATH BY COVID19 vs AGE
+
+~2 odds per decade increase
+pvalue < 2*e-16 (strongly significant)
+
+
+using a more general model to check if linear model is ok
+gam: generalized additive mdel
+s(age) - smoothing(age)
+
+```{r}
+library(mgcv)
+fit = gam(death_status ~ s(age), data=d, family = "binomial")
+summary(fit)
+```
+
+edf : estimated degrees of freedom (1 -> linear model)
+
+visually
+```{r}
+plot(fit)
+```
+
+fitting of polynomial (quadrtic) form (with ² term)
+
+```{r}
+fit <- glm(death_status ~ age + I(age^2), data = d, family = "binomial")
+summary(fit)
+```
+
+square term not significant.
 
 
 ## Comparing countries
