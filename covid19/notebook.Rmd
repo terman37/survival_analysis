@@ -168,7 +168,7 @@ RISK OF DEATH BY COVID19 vs AGE
 pvalue < 2*e-16 (strongly significant)
 
 
-using a more general model to check if linear model is ok
+**using a more general model to check if linear model is ok**
 gam: generalized additive mdel
 s(age) - smoothing(age)
 
@@ -185,7 +185,7 @@ visually
 plot(fit)
 ```
 
-fitting of polynomial (quadrtic) form (with ² term)
+**fitting of polynomial (quadrtic) form (with ² term)**
 
 ```{r}
 fit <- glm(death_status ~ age + I(age^2), data = d, family = "binomial")
@@ -194,6 +194,19 @@ summary(fit)
 
 square term not significant.
 
+
+**PIECE WISE LINEAR TERMS**
+```{r}
+d2 = mutate(d,age_70 = ifelse(age>70,age-70,0))
+```
+
+```{r}
+summary(glm(death_status ~ age + age_70, data=d2, family = "binomial"))
+```
+
+H0: B2 = 0
+age_70 estimate <0 : negative contribution when age > 70
+age_70 pvalue big --> no significance
 
 ## Comparing countries
 
