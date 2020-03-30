@@ -210,6 +210,11 @@ age_70 pvalue big --> no significance
 
 ## Comparing countries
 
+```{r}
+table(d$country)
+```
+
+
 Caveats:
 1. obsolete data
 2. different testing guidelines per country
@@ -217,7 +222,7 @@ Caveats:
 4. ...?
 
 ```{r}
-d1 <- mutate(d, country = relevel(factor(country), ref = "China"))
+d1 <- mutate(d, country = relevel(factor(country), ref = "China")) # odds ratio compare country vs china
 summary(glm(death_status ~ country, data = d1, family = "binomial"))
 ```
 
