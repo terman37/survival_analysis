@@ -134,6 +134,42 @@ exp(0.5069)
 
 logistic regression -> exp(B1) : odds ratio
 
+
+### Maximum Likelihood
+
+```{r}
+library(maxLik)
+```
+
+model death by gender
+```{r}
+dx = d %>% select(gender, death_status) %>% na.omit()
+
+x = (dx$gender == "male") + 0
+y = dx$death_status +0
+
+logLik <- function(beta) {
+  linear_predictor = beta[1]  + beta[2]*x
+  log_probabilities = dbinom(y,size=1, prob=plogis(linear_predictor),log=TRUE)
+  log_likelihood = sum(log_probabilities)
+  return(log_likelihood)
+}
+
+```
+
+```{r}
+fit = maxLik(logLik,start=c(intercept=0,gender=0))
+```
+
+```{r}
+summary(fit)
+```
+comparison with GLM
+```{r}
+summary(glm(death_status~gender, data=dx,family="binomial"))
+```
+
+
 ## Age
 ```{r}
 summary(glm(death_status ~ age, data = d, family = "binomial"))
@@ -207,6 +243,8 @@ summary(glm(death_status ~ age + age_70, data=d2, family = "binomial"))
 H0: B2 = 0
 age_70 estimate <0 : negative contribution when age > 70
 age_70 pvalue big --> no significance
+
+
 
 ## Comparing countries
 
