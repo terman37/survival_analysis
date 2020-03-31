@@ -58,8 +58,25 @@ table(dat$delta)
 
 How the Progress Free Survival times data looks like (ignoring censoring info)?
 ```{r}
-hist(dat$timeWeeks * 7 / 365.25)
+hist(dat$timeWeeks * 7 / 365.25) # scale in years
+# carefull not meaningful as does not take care of censoring information
 ```
+
+```{r}
+summary(dat)
+```
+
+### Check censoring coding (0=censored, 1=not censored (event))
+
+```{r}
+with(dat,Surv(timeWeeks,delta))
+```
+
+43+ means censored data at week 43
+
+
+
+
 
 ### Kaplan-Meyer estimator
 ```{r}
@@ -67,14 +84,16 @@ fit.KM <- survfit(Surv(timeWeeks, delta) ~ 1, data = dat)
 summary(fit.KM)
 ```
 
+
 ```{r}
 plot(fit.KM)
 ```
 
-Time in weeks might be cumbersome to read: we can re-express it in years
+
+Time in weeks might be cumbersome to read: we can re-express it in months
 ```{r}
-dat <- mutate(dat, timeYears = timeWeeks * 7 / 365.25)
-fit.KM <- survfit(Surv(timeYears, delta) ~ 1, data = dat, conf.type = "log-log")
+dat <- mutate(dat, timeMonths = timeWeeks * 7 / 365.25*12)
+fit.KM <- survfit(Surv(timeMonths, delta) ~ 1, data = dat, conf.type = "log-log") # conf.type : confidence interval
 summary(fit.KM)
 plot(fit.KM)
 ```
@@ -108,6 +127,11 @@ dat <- data.frame(ratID = paste0("rat", 1:5),
 fit.logrank <- survdiff(Surv(time, status) ~ group, data = dat)
 fit.logrank
 ```
+
+H0: Sa(t) = Sb(t)
+large pvalue 0.7 cannot reject group0 = group1
+
+this is a non parametric test
 
 ## Case study: the pancreatic dataset
 
@@ -180,6 +204,8 @@ fit.KM
 ```{r}
 survdiff(Surv(PFS) ~ stage, data = dat)
 ```
+
+pvalue:0.1 not significantly difference
 
 What's the estimated probability of not experiencing a cancer progression for (at least) 1 year?
 ```{r}
