@@ -231,9 +231,22 @@ summary(dat)
 ```
 
 Question: do the 2 treatment group differ significantly in terms of survival to relapse?
+
+```{r}
+fit.KM = survfit(Surv(ttr, relapse) ~ grp, data = dat)
+fit.KM
+plot(fit.KM, col=1:2)
+```
+
+
 ```{r}
 survdiff(Surv(ttr, relapse) ~ grp, data = dat)
+
 ```
+
+pvalue < 0.05
+Patch and combination treatment are significantly different
+
 
 Critique: the 2 groups have different age distribution, which might confound our results.
 Lets investigate:

@@ -53,6 +53,12 @@ pLogLik <- function(beta) {
 }
 ```
 
+```{r}
+debugonce(pLogLik)
+pLogLik(3)
+```
+
+
 We can plot it:
 ```{r}
 f <- Vectorize(pLogLik)
