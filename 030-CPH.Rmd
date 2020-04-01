@@ -166,6 +166,8 @@ plot(pred.cph, fun = "cloglog", col = 1:2)
 
 # Case Study: pharmakosmoking
 
+## A. MODEL FOR TTR GIVEN TRT/AGE/EMPL/GENDER/RACE
+
 
 ```{r}
 library(asaur)
@@ -219,5 +221,26 @@ d_segmented %>%
   head(10)
 ```
 
+## C. PREDICTING MEDIAN TTR AND SURV(6 MONTHS | COVARIATES)
 
+```{r}
+
+d0 = d_new[1,]
+p_s = survfit(fit,newdata = d0)
+summary(p_s)
+
+```
+
+```{r}
+plot(p_s)
+
+```
+
+```{r}
+p_s
+```
+
+```{r}
+summary(p_s,time=180)
+```
 
