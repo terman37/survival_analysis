@@ -74,6 +74,7 @@ summary(fit.ML)
 With the `coxph` function:
 ```{r}
 fit.cph <- coxph(Surv(time, failure) ~ x, data = dat)
+confint(fit.cph)
 summary(fit.cph)
 ```
 
@@ -161,3 +162,62 @@ plot(pred.NA, fun = "cloglog", col = 1:2)
 ```{r}
 plot(pred.cph, fun = "cloglog", col = 1:2)
 ```
+
+
+# Case Study: pharmakosmoking
+
+
+```{r}
+library(asaur)
+d_raw <- pharmacoSmoking
+```
+
+```{r}
+d_raw
+```
+
+
+```{r}
+table(d_raw$employment,useNA="always")
+```
+
+```{r}
+dat = mutate(d_raw,employment = ifelse(employment=="ft","ft","other"), 
+             grp=relevel(grp,ref="patchOnly"),
+             race = ifelse(race == "white","white",
+                           ifelse(race == "black","black","other"))
+             )
+table(dat$employment)
+table(dat$race)
+```
+
+```{r}
+fit=coxph(Surv(ttr,relapse)~grp+age+gender+employment+race,data=dat)
+```
+
+```{r}
+coef_table = broom::tidy(fit) %>% write.csv("coef_table.csv")
+```
+
+## B. Data Segmenetation
+
+Pretend it's a new dataset
+```{r}
+d_new=select(dat,-ttr,-relapse)
+```
+
+
+```{r}
+d_segmented = d_new %>% 
+  mutate(risk_score = predict(fit,newdata=d_new,type="lp"))
+head(d_segmented)
+```
+
+```{r}
+d_segmented %>% 
+  arrange(desc(risk_score)) %>%
+  head(10)
+```
+
+
+
