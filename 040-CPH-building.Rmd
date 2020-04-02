@@ -23,8 +23,13 @@ MC <- coxph(Surv(ttr, relapse) ~ ageGroup4 + employment, data = dat)
 
 ## Comparing nested models: LRT
 ```{r}
-anova(MA, MC)
+anova(MA, MC) # anova (simpler model , more coplex model)
 ```
+
+2*(380.04-377.76) = 4.5666
+pvalue > 5% we do not reject Ho
+no significant diff between models
+model 1 is better, as simpler
 
 ## Comparing non-nested models: AIC
 ```{r}
