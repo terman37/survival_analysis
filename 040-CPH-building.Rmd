@@ -29,7 +29,7 @@ anova(MA, MC) # anova (simpler model , more coplex model)
 2*(380.04-377.76) = 4.5666
 pvalue > 5% we do not reject Ho
 no significant diff between models
-model 1 is better, as simpler
+model 1 is better as simpler
 
 ## Comparing non-nested models: AIC
 ```{r}
@@ -80,7 +80,7 @@ ROC.4 <- survivalROC(Stime = mayo$time,
 ROC.5 <- survivalROC(Stime = mayo$time,
                      status = mayo$censor,
                      marker = mayo$mayoscore5,
-                     predict.time = 365.25,
+                     predict.time = 365.25 * 5,
                      method = "KM")
 ```
 
