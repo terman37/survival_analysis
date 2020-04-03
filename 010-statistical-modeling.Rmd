@@ -19,7 +19,7 @@ title: "Case Study: duration of hospitalization"
 ```{r}
 library(tidyverse)
 raw <-
-  read_tsv("data/hospitalization.csv",
+  read_tsv("hospitalization.csv",
            col_types = cols(id = 'c',
                             dur = 'd',
                             age = 'd',
