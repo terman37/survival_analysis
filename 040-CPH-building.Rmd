@@ -170,6 +170,7 @@ Pancreatic cancer dataset
 library(survival)
 library(asaur) ## dataset
 library(plyr)
+library(tidyverse)
 library(ggplot2)
 
 fmt <- "%m/%d/%Y"
